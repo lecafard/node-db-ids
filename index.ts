@@ -24,7 +24,7 @@ export class DBIdProvider {
     this.rt = new WasmIdGenerator(secret);
   }
 
-  encode(input: Pick<DBId<string>, "tbl" | "id"> & { tag?: number }) {
+  encode(input: DBId<string>) {
     if (input.tag && (input.tag % 1 != 0 || input.tag > 0xffffffff)) {
       throw new DBIdProviderError("Tag is not a 32 bit unsigned integer");
     }

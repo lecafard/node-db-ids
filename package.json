@@ -9,8 +9,8 @@
     "pkg"
   ],
   "scripts": {
-    "build": "wasm-pack build --target bundler --no-pack && tsup"
+    "build": "wasm-pack build --target bundler --no-pack"
   },
   "private": false,
-  "version": "0.0.1"
+  "version": "0.1.5"
 }

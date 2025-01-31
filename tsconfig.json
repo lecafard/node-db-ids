@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "lib": ["ES2024"],
-    "target": "ES2024",
-    "module": "ES2022",
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "CommonJS",
     "moduleDetection": "force",
     "declaration": true,
 
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
 
     "strict": true,
     "skipLibCheck": true,
