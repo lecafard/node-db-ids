@@ -1,5 +1,5 @@
 {
-  "name": "@pickl/db-id",
+  "name": "@pickl/db-ids",
   "main": "./index.ts",
   "type": "module",
   "devDependencies": {
@@ -12,5 +12,5 @@
     "build": "wasm-pack build --target bundler --no-pack"
   },
   "private": false,
-  "version": "0.1.5"
+  "version": "0.0.2"
 }

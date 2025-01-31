@@ -1,17 +1,18 @@
 import { WasmIdGenerator } from "./pkg/db_id";
 
-export class DBId<T extends string> {
-  public readonly tag: number;
-
+export class DBId<T extends string> implements DBId<T> {
+  /**
+   * Do not instantiate this directly, use the DBIdProvider to create it
+   */
   constructor(
-    public readonly tbl: T,
+    public readonly role: T,
     public readonly id: bigint,
-    tag?: number,
-  ) {
-    if (tag && (tag % 1 != 0 || tag > 0xffffffff)) {
-      throw new Error("Tag is not a 32 bit unsigned integer");
-    }
-    this.tag = tag || 0;
+    public readonly tag: number,
+    public readonly str: string
+  ) {}
+
+  toString() {
+    return this.str;
   }
 }
 
@@ -24,18 +25,19 @@ export class DBIdProvider {
     this.rt = new WasmIdGenerator(secret);
   }
 
-  encode(input: DBId<string>) {
-    if (input.tag && (input.tag % 1 != 0 || input.tag > 0xffffffff)) {
+  fromParts<T extends string>({ role, id, tag }: { role: T, id: bigint, tag?: number }) {
+    if (tag && (tag % 1 != 0 || tag > 0xffffffff)) {
       throw new DBIdProviderError("Tag is not a 32 bit unsigned integer");
     }
-    return this.rt.encode(input.tbl, input.id, input.tag || 0);
+    const str = this.rt.encode(role, id, tag || 0);
+    return new DBId<T>(role, id, tag || 0, str);
   }
 
-  decode<T extends string>(input: string, assert_type?: T) {
+  fromString<T extends string>(input: string, assert_type?: T) {
     const out = this.rt.decode(input) as [string, bigint, number];
     if (assert_type && out[0] !== assert_type) {
       throw new DBIdProviderError("ID does not match expected type");
     }
-    return new DBId(out[0], out[1], out[2]);
+    return new DBId<T>(out[0] as T, out[1], out[2], input);
   }
 }
