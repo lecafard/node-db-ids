@@ -8,7 +8,7 @@ export class DBId<T extends string> {
     public readonly id: bigint,
     tag?: number,
   ) {
-    if (tag && (!Number.isInteger(tag) || tag > 0xffffffff)) {
+    if (tag && (tag % 1 != 0 || tag > 0xffffffff)) {
       throw new Error("Tag is not a 32 bit unsigned integer");
     }
     this.tag = tag || 0;
@@ -25,7 +25,7 @@ export class DBIdProvider {
   }
 
   encode(input: Pick<DBId<string>, "tbl" | "id"> & { tag?: number }) {
-    if (input.tag && (!Number.isInteger(input.tag) || input.tag > 0xffffffff)) {
+    if (input.tag && (input.tag % 1 != 0 || input.tag > 0xffffffff)) {
       throw new DBIdProviderError("Tag is not a 32 bit unsigned integer");
     }
     return this.rt.encode(input.tbl, input.id, input.tag || 0);

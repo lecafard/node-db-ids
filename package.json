@@ -1,17 +1,16 @@
 {
   "name": "@pickl/db-id",
-  "main": "./pkg/index.js",
-  "module": "./pkg/index.mjs",
-  "types": "./pkg/index.d.ts",
+  "main": "./index.ts",
+  "type": "module",
   "devDependencies": {
-    "tsup": "^8.3.6",
-    "typescript": "^5.0.0"
+    "typescript": "^5.7.3"
   },
-  "files": ["pkg"],
+  "files": [
+    "pkg"
+  ],
   "scripts": {
-    "build": "wasm-pack build --target nodejs"
+    "build": "wasm-pack build --target bundler --no-pack && tsup"
   },
   "private": false,
-  "version": "0.0.2",
-  "type": "module"
+  "version": "0.0.1"
 }
