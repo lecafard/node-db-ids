@@ -5,6 +5,10 @@
   "devDependencies": {
     "typescript": "^5.7.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lecafard/node-db-ids.git"
+  },
   "files": [
     "pkg"
   ],
@@ -12,5 +16,5 @@
     "build": "wasm-pack build --target bundler --no-pack"
   },
   "private": false,
-  "version": "0.0.2"
+  "version": "0.0.5"
 }
