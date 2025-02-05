@@ -7,7 +7,6 @@ export function ISDBId(obj: unknown) {
 export interface DBId<T extends string> {
   readonly scope: T;
   readonly id: bigint;
-  readonly tag: number;
   readonly payload: string;
 
   toString: () => string;
@@ -20,7 +19,6 @@ class DBIdObject<T extends string> implements DBId<T> {
   constructor(
     public readonly scope: T,
     public readonly id: bigint,
-    public readonly tag: number,
     public readonly payload: string
   ) {}
 
@@ -38,12 +36,9 @@ export class DBIdProvider {
     this.rt = new WasmIdGenerator(secret);
   }
 
-  fromParts<T extends string>({ scope, id, tag }: { scope: T, id: bigint, tag?: number }) {
-    if (tag && (tag % 1 != 0 || tag > 0xffffffff)) {
-      throw new DBIdProviderError("Tag is not a 32 bit unsigned integer");
-    }
-    const payload = this.rt.encode(scope, id, tag || 0);
-    return new DBIdObject<T>(scope, id, tag || 0, payload);
+  fromParts<T extends string>({ scope, id }: { scope: T, id: bigint }) {
+    const payload = this.rt.encode(scope, id);
+    return new DBIdObject<T>(scope, id, payload);
   }
 
   fromString<T extends string>(input: string, assert_type?: T) {
@@ -51,6 +46,6 @@ export class DBIdProvider {
     if (assert_type && out[0] !== assert_type) {
       throw new DBIdProviderError("ID does not match expected type");
     }
-    return new DBIdObject<T>(out[0] as T, out[1], out[2], input);
+    return new DBIdObject<T>(out[0] as T, out[1], input);
   }
 }

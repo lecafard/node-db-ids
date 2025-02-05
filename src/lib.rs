@@ -11,6 +11,9 @@ use hashing::hmac_sha256_128;
 use lru::LruCache;
 use wasm_bindgen::prelude::*;
 
+const U96_MAX: u128 = (1 << 96) - 1;
+
+
 #[wasm_bindgen]
 pub struct WasmIdGenerator {
     secret: String,
@@ -29,10 +32,12 @@ impl WasmIdGenerator {
         }
     }
 
-    pub fn encode(&mut self, t: &str, i: u64, g: u32) -> Result<String, JsValue> {
+    pub fn encode(&mut self, t: &str, i: u128) -> Result<String, JsValue> {
+        if i > U96_MAX {
+            return Err(JsValue::from_str("Number is larger than 96 bits"));
+        }
         let mut input_bytes = [0u8; 16];
-        input_bytes[..8].copy_from_slice(&i.to_le_bytes());
-        input_bytes[8..12].copy_from_slice(&g.to_le_bytes());
+        input_bytes[..12].copy_from_slice(&i.to_le_bytes()[..12]);
         let sum = self.crc.checksum(&input_bytes[..12]);
         input_bytes[12..].copy_from_slice(&sum.to_le_bytes());
         let mut cipher = self
@@ -68,19 +73,15 @@ impl WasmIdGenerator {
             return Err(JsValue::from_str("Integrity check failed."));
         }
 
-        // Convert the decrypted bytes back into a u64 (little-endian)
-        let i = u64::from_le_bytes(
-            input_bytes[..8]
+        input_bytes[12..16].fill(0);
+        // Convert the decrypted bytes back into a u128
+        let i = u128::from_le_bytes(
+            input_bytes[..]
                 .try_into()
-                .map_err(|_| JsValue::from_str("Failed to convert decrypted bytes to u64."))?,
-        );
-        let g = u32::from_le_bytes(
-            input_bytes[8..12]
-                .try_into()
-                .map_err(|_| JsValue::from_str("Failed to convert decrypted bytes to u32."))?,
+                .map_err(|_| JsValue::from_str("Failed to convert decrypted bytes to u128."))?,
         );
 
-        Ok(vec![JsValue::from(t), JsValue::from(i), JsValue::from(g)])
+        Ok(vec![JsValue::from(t), JsValue::from(i)])
     }
 
     fn get_key(&mut self, t: &str) -> Option<&Aes128> {

@@ -23,7 +23,7 @@ const provider = new DBIdProvider("aaaaaaa");
 
 ### Encrypting an ID
 
-Encrypt an ID using the secret key and a scope. You can also provide an optional 32-bit tag:
+Encrypt up to a 96 bit ID using the secret key and a scope.
 
 ```js
 const encrypted = provider.fromParts({ id: 1n, scope: "tbl" });
@@ -32,8 +32,8 @@ console.log("Encrypted:", encrypted);
 
 ### Decrypting an ID
 
-Decode a serialized ID using the secret key. This will return an object containing the scope,
-32-bit tag, and the original ID:
+Decode a serialized ID using the secret key. This will return an object containing the scope
+and the original ID.
 
 ```js
 const decrypted = provider.fromString(encrypted.payload);
@@ -73,13 +73,11 @@ const { DBIdProvider } = require('node-db-id');
 Encrypted: DBId {
   scope: 'tbl',
   id: 1n,
-  tag: 0,
   payload: 'tbl_uoXRuMlMYhM2esa1eGZey'
 }
 Decrypted: DBId {
   scope: 'tbl',
   id: 1n,
-  tag: 0,
   payload: 'tbl_uoXRuMlMYhM2esa1eGZey'
 }
 Encrypt (ops/s): 1394990.0318232172
